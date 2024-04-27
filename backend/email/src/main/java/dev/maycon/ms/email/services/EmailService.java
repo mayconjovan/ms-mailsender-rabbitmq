@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 
 @Service
@@ -38,7 +39,9 @@ public class EmailService {
     @Transactional
     public void sendEmail(EmailModel emailModel) {
         try {
-            Path filePath = Path.of("src/main/resources/static/Maycon Jovan Pereira (pt-BR).pdf");
+
+            Path filePath = Paths.get(getClass().getClassLoader().getResource("static/Maycon Jovan Pereira (pt-BR).pdf").toURI());
+
             byte[] fileContent = Files.readAllBytes(filePath);
 
             emailModel.setSendDateEmail(LocalDateTime.now());

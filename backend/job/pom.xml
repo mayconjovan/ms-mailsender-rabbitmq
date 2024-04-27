@@ -11,8 +11,8 @@
     <groupId>dev.maycon.ms</groupId>
     <artifactId>job</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>company</name>
-    <description>company email sender</description>
+    <name>job</name>
+    <description>job</description>
     <properties>
         <java.version>17</java.version>
     </properties>
