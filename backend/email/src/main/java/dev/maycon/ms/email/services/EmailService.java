@@ -3,6 +3,7 @@ package dev.maycon.ms.email.services;
 import dev.maycon.ms.email.enums.StatusEmail;
 import dev.maycon.ms.email.models.EmailModel;
 import dev.maycon.ms.email.repositories.EmailRepository;
+import jakarta.activation.DataHandler;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
@@ -17,10 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Service
 public class EmailService {
@@ -40,7 +43,9 @@ public class EmailService {
     public void sendEmail(EmailModel emailModel) {
         try {
 
-            Path filePath = Paths.get(getClass().getClassLoader().getResource("static/Maycon Jovan Pereira (pt-BR).pdf").toURI());
+            String cvModel = getCvModel(emailModel.getBodyTemplate());
+
+            Path filePath = Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource(cvModel)).toURI());
 
             byte[] fileContent = Files.readAllBytes(filePath);
 
@@ -52,7 +57,6 @@ public class EmailService {
 
             helper.setTo(emailModel.getEmailTo());
             helper.setSubject(emailModel.getSubject());
-
             helper.setText(emailModel.getText(), false);
 
             MimeMultipart multipart = new MimeMultipart();
@@ -63,12 +67,11 @@ public class EmailService {
 
             ByteArrayDataSource dataSource = new ByteArrayDataSource(fileContent, "application/pdf");
             MimeBodyPart attachment = new MimeBodyPart();
-            attachment.setDataHandler(new jakarta.activation.DataHandler(dataSource));
+            attachment.setDataHandler(new DataHandler(dataSource));
             attachment.setFileName(filePath.getFileName().toString());
             multipart.addBodyPart(attachment);
 
             mimeMessage.setContent(multipart);
-
 
             javaMailSender.send(mimeMessage);
 
@@ -76,11 +79,21 @@ public class EmailService {
         } catch (MessagingException | MailException | IOException e) {
             e.printStackTrace();
             emailModel.setStatusEmail(StatusEmail.ERROR);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         } finally {
             repository.save(emailModel);
-            return;
         }
 
+    }
+
+    private String getCvModel(int bodyTemplate) {
+        return switch (bodyTemplate) {
+            case 1 -> "static/Maycon Jovan Pereira (pt-PT).pdf";
+            case 2 -> "static/Maycon Jovan Pereira (pt-BR).pdf";
+            case 3 -> "static/Maycon Jovan Pereira (en-US).pdf";
+            default -> throw new IllegalStateException("Unexpected value: " + bodyTemplate);
+        };
     }
 
 

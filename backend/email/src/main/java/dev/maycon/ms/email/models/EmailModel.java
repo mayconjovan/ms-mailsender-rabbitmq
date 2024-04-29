@@ -29,6 +29,7 @@ public class EmailModel implements Serializable {
 
     @Column(columnDefinition = "TEXT")
     private String text;
+    private int bodyTemplate;
     private LocalDateTime sendDateEmail;
     private StatusEmail statusEmail;
 

@@ -20,7 +20,7 @@ public class JobController {
     final JobService service;
 
     @PostMapping
-    public ResponseEntity<JobModel> insert(@RequestBody @Valid JobRecordDTO jobRecordDTO){
+    public ResponseEntity<JobModel> sendEmail(@RequestBody @Valid JobRecordDTO jobRecordDTO){
         return ResponseEntity.status(HttpStatus.CREATED).body(service.insert(jobRecordDTO));
     }
 

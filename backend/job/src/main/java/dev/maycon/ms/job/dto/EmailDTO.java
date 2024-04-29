@@ -11,5 +11,6 @@ public class EmailDTO {
     private String emailTo;
     private String subject;
     private String text;
+    private int bodyTemplate;
 
 }
