@@ -1,11 +1,13 @@
-FROM maven:latest AS builder
+FROM openjdk:latest AS mavenbuilder
+
 WORKDIR /app
-COPY pom.xml .
-RUN mvn dependency:go-offline
-COPY src ./src
-RUN mvn clean package -DskipTests
+COPY . .
 
+RUN ./mvnw -Dmaven.repo.local=/app/.m2 clean package -DskipTests
 
-FROM openjdk:17
-COPY --from=builder /app/target/job-0.0.1-SNAPSHOT.jar /job-service.jar
-ENTRYPOINT ["java", "-jar", "/job-service.jar"]
+FROM openjdk:latest
+
+COPY --from=mavenbuilder /app/target/*.jar /app/app.jar
+
+CMD ["java", "-jar", "/app/app.jar"]
+
