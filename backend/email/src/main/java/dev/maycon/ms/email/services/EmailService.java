@@ -62,8 +62,11 @@ public class EmailService {
             MimeMultipart multipart = new MimeMultipart();
 
             MimeBodyPart textBodyPart = new MimeBodyPart();
-            textBodyPart.setContent(emailModel.getText(), "text/plain");
+            textBodyPart.setHeader("Content-Type", "text/html; charset=iso-8859-1");
+            textBodyPart.setContent(emailModel.getText(), "text/plain; charset=iso-8859-1");
+            textBodyPart.setHeader("Content-Transfer-Encoding", "quoted-printable");
             multipart.addBodyPart(textBodyPart);
+
 
             ByteArrayDataSource dataSource = new ByteArrayDataSource(fileContent, "application/pdf");
             MimeBodyPart attachment = new MimeBodyPart();
